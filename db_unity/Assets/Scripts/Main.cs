@@ -18,10 +18,15 @@ public class Main : MonoBehaviour
         ResMgr.Init();
         GameConst.Init();
         ViewMgr.Init(gameObject);
+
+        BattleMgr.Ins.Init();
     }
 
     private IEnumerator Start()
     {
+        //设置屏幕常亮
+        Screen.sleepTimeout = SleepTimeout.NeverSleep;
+
         ViewMgr.Ins.CanvasSize = ViewMgr.Ins.CanvasTransfrom.sizeDelta;
         GameObject eventSystem = GameObject.Find("EventSystem");
         if (eventSystem != null)
@@ -47,6 +52,8 @@ public class Main : MonoBehaviour
     private void Update()
     {
         //online socket Update();
+
+        BattleMgr.Ins.Update();
     }
 
     //高分屏修改分辨率
@@ -64,5 +71,9 @@ public class Main : MonoBehaviour
             ScreenHeight_Y = Screen.height;
         }
         Debug.Log("ScreenSize" + "ScreenWidth_X=" + ScreenWidth_X + ",ScreenHeight_Y=" + ScreenHeight_Y);
+    }
+
+    private void OnDestroy()
+    {
     }
 }

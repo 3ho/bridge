@@ -25,6 +25,10 @@ public partial class LoginPanel
         count++;
         SetLabelText(txt_count, count);
         Debug.Log("LoginPanel.OnStartGame" + Time.time);
+
+        Battle battle = new Battle();
+        SetLabelText(txt_count, battle.mapToString());
+
     }
 
     protected override void onDestroy()
