@@ -41,7 +41,7 @@ public class Main : MonoBehaviour
         //cfg
         yield return StartCoroutine(LoadSomeCfg());
         // start game
-        ViewMgr.Ins.ShowView<LoginPanel>();
+        ViewMgr.Ins.ShowView<MainPanel>();
     }
 
     private IEnumerator LoadSomeCfg()
