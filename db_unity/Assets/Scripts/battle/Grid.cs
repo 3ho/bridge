@@ -19,4 +19,11 @@ public sealed class Grid
         this.x = x;
         this.y = y;
     }
+
+    public Grid(int x, int y, int color)
+    {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+    }
 }

@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 public sealed class Battle
 {
-    public const int MapWidth_X = 10;
-    public const int MapHeight_Y = 10;
+    public const int MapWidth_X = 20;
+    public const int MapHeight_Y = 20;
 
     private readonly Grid[,] mCells = null;
 
@@ -50,5 +50,10 @@ public sealed class Battle
             sb.Append("\n");
         }
         return sb.ToString();
+    }
+
+    public Grid getGrid(int x,int y)
+    {
+        return mCells[x, y];
     }
 }

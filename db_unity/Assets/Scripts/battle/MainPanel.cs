@@ -29,13 +29,15 @@ public partial class MainPanel
         showLogin();
     }
 
+    private Battle battle;
+
     private void onStartBattle(GameObject go)
     {
         count++;
         SetLabelText(txt_count, count);
         Debug.Log("MainPanel.OnStartGame" + Time.time);
 
-        Battle battle = new Battle();
+        battle = new Battle();
         SetLabelText(txt_count, battle.mapToString());
 
         showBattle();
@@ -45,7 +47,17 @@ public partial class MainPanel
 
     private void genMap()
     {
-        addUIGrid(new Grid(1, 1));
+        for (int i = 0; i < Battle.MapWidth_X; i++)
+        {
+            for (int j = 0; j < Battle.MapHeight_Y; j++)
+            {
+                addUIGrid(battle.getGrid(i,j));
+            }
+        }
+        //addUIGrid(new Grid(1, 1,ColorUtils.B));
+        //addUIGrid(new Grid(2, 3));
+        //addUIGrid(new Grid(4, 2, ColorUtils.R));
+        //addUIGrid(new Grid(7, 1, ColorUtils.G));
     }
 
     private void addUIGrid(Grid grid)
@@ -78,7 +90,7 @@ public partial class MainPanel
         Debug.Log("grid=" + grid + ",pos=" + getPosByGrid(grid));
     }
 
-    private Vector2 offsetPos = new Vector2(-530, -600);
+    private Vector2 offsetPos = new Vector2(-500, -1200);
 
     private Vector2 getPosByGrid(Grid grid)
     {
