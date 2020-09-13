@@ -7,12 +7,14 @@ using UnityEngine;
 
 public sealed class Grid
 {
+    public static Sprite xImage;
+
     public readonly int x;
     public readonly int y;
 
     public int color;
 
-    public GameObject uiGrid;
+    public UIGrid uiGrid;
 
     public Grid(int x, int y)
     {

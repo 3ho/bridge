@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public partial class MainPanel
@@ -15,12 +16,21 @@ public partial class MainPanel
     {
         UIEventListener.Get(btn_back).onClick = onBack;
         UIEventListener.Get(btn_start).onClick = onStartBattle;
+
+        // m_gird_x
+        DragUI gird_x_Cs = m_gird_x.GetComponent<DragUI>();
+        gird_x_Cs.OnDrag_X = OnDrag_Prop;
+        gird_x_Cs.OnPointerUp_X = OnPointerUp_Prop;
+        gird_x_Cs.OnPointerDown_X = OnPointerDown_Prop;
     }
 
     protected override void onShow(System.Object param = null, string childView = null)
     {
         showLogin();
 
+        UIGrid m_uiGrid = m_gird.GetComponent<UIGrid>();
+        Image girdImage = m_uiGrid.m_color.GetComponent<Image>();
+        Grid.xImage = girdImage.sprite;
         // 
         RectTransform rootRect = m_mapRoot.GetComponent<RectTransform>();
         Vector2 xy = rootRect.sizeDelta;
@@ -45,7 +55,6 @@ public partial class MainPanel
     {
         count++;
         SetLabelText(txt_count, count);
-        Debug.Log("MainPanel.OnStartGame" + Time.time);
 
         battle = new Battle();
         SetLabelText(txt_count, battle.mapToString());
@@ -61,22 +70,34 @@ public partial class MainPanel
         {
             for (int j = 0; j < Battle.MapHeight_Y; j++)
             {
-                addUIGrid(battle.getGrid(i,j));
+                addUIGrid(battle.getGrid(i, j));
             }
         }
-        //addUIGrid(new Grid(1, 1,ColorUtils.B));
-        //addUIGrid(new Grid(2, 3));
-        //addUIGrid(new Grid(4, 2, ColorUtils.R));
-        //addUIGrid(new Grid(7, 1, ColorUtils.G));
     }
 
     private void addUIGrid(Grid grid)
     {
         GameObject newGird = Instantiate(m_gird.gameObject) as GameObject;
-        grid.uiGrid = newGird;
         UIGrid newUIG = newGird.GetComponent<UIGrid>();
-        Image newImage = newUIG.m_color.GetComponent<Image>();
-        
+        grid.uiGrid = newUIG;
+
+        updateGridUi(grid);
+
+        RectTransform rt = newGird.GetComponent<RectTransform>();
+        rt.SetParent(m_gird.transform.parent, false);
+        rt.pivot = Vector2.zero;
+        rt.anchorMax = rt.anchorMin = Vector2.zero;
+        rt.anchoredPosition = Vector2.zero;
+        rt.localScale = Vector3.one;
+        rt.localPosition = getPosByGrid(grid);
+        rt.sizeDelta = new Vector2(GridWidthX, GridHightY);
+
+        newGird.SetActive(true);
+    }
+
+    private void updateGridUi(Grid grid)
+    {
+        Image newImage = grid.uiGrid.m_color.GetComponent<Image>();
         switch (grid.color)
         {
             case ColorUtils.R:
@@ -92,20 +113,35 @@ public partial class MainPanel
                 newImage.sprite = null;
                 break;
             default:
+                newImage.color = Color.white;
+                newImage.sprite = Grid.xImage;
                 break;
         }
-        RectTransform rt = newGird.GetComponent<RectTransform>();
-        rt.SetParent(m_gird.transform.parent, false);
-        rt.pivot = Vector2.zero;
-        rt.anchorMax = rt.anchorMin = Vector2.zero;
-        rt.anchoredPosition = Vector2.zero;
-        rt.localScale = Vector3.one;
-        rt.localPosition = getPosByGrid(grid);
+    }
 
-        rt.sizeDelta = new Vector2(GridWidthX, GridHightY);
+    public void OnDrag_Prop(PointerEventData eventData)
+    {
 
-        newGird.SetActive(true);
-        Debug.Log("grid=" + grid + ",pos=" + getPosByGrid(grid));
+    }
+
+    public void OnPointerDown_Prop(PointerEventData eventData)
+    {
+        Debug.Log("OnPointerDown_Prop" + ",position=" + eventData.position + ",pressPosition=" + eventData.pressPosition + ",worldPosition=" + eventData.pointerCurrentRaycast.worldPosition);
+    }
+
+    public void OnPointerUp_Prop(PointerEventData eventData)
+    {
+        Vector3 worldPosition = eventData.pointerCurrentRaycast.worldPosition;
+        Vector3 localPos = m_gird.transform.InverseTransformPoint(worldPosition);
+        Vector2Int int2 = getGridByXY(localPos);
+        // ¸Ä±äÑÕÉ«
+        Grid grid = battle.getGrid(int2.x, int2.y);
+        Debug.Log("OnPointerUp_Prop" + ",worldPosition=" + eventData.pointerCurrentRaycast.worldPosition + ",int2=" + int2 + ",grid=" + grid);
+        if (grid != null)
+        {
+            grid.color = ColorUtils.X;
+            updateGridUi(grid);
+        }
     }
 
     private Vector2 offsetPos = new Vector2(-0, -0);
@@ -124,6 +160,17 @@ public partial class MainPanel
     private float getYByGrid(int gridY)
     {
         return offsetPos.y + gridY * GridHightY;
+    }
+
+    private Vector2Int getGridByXY(Vector2 pos)
+    {
+        float x = (pos.x - offsetPos.x) / GridWidthX;
+        float y = (pos.y - offsetPos.y) / GridHightY;
+        if (x < 0)
+            x--;
+        if (y < 0)
+            y--;
+        return new Vector2Int((int)x, (int)y);
     }
 
     private void showLogin()

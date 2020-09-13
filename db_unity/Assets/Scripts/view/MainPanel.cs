@@ -1,4 +1,4 @@
-//-L-<btn_back,m_login,btn_start,txt_count,m_battle,m_gird,m_mapRoot>
+//-L-<btn_back,m_login,btn_start,txt_count,m_battle,m_gird,m_mapRoot,m_gird_x>
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
@@ -13,6 +13,7 @@ public partial class MainPanel : View
 	private GameObject m_battle;
 	private UIGrid m_gird;
 	private GameObject m_mapRoot;
+	private GameObject m_gird_x;
 
 	protected override void Awake()
 	{
@@ -27,6 +28,7 @@ public partial class MainPanel : View
 		m_battle =  data.GameObjects[4].gameObject;
 		m_gird = View.AddComponentIfNotExist<UIGrid>(data.GameObjects[5].gameObject);
 		m_mapRoot =  data.GameObjects[6].gameObject;
+		m_gird_x =  data.GameObjects[7].gameObject;
 		ViewMgr.Ins.addView(this);
 	}
 

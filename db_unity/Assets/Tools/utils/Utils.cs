@@ -133,74 +133,19 @@ public class Utils : MonoBehaviour
         return true;
     }
 
-    public static bool TriggerEvent(IntDelegate e, int arg)
+    public static bool TriggerEvent_Try<T>(Event<T> e, T t)
     {
-        if (e == null)
+        try
+        {
+            if (e != null)
+                e(t);
+            return true;
+        }
+        catch (Exception ex)
+        {
             return false;
-        e(arg);
-        return true;
+        }
     }
-    public static bool TriggerEvent(BoolDelegate e, bool arg)
-    {
-        if (e == null)
-            return false;
-        e(arg);
-        return true;
-    }
-    public static bool TriggerEvent(FloatDelegate e, float arg)
-    {
-        if (e == null)
-            return false;
-        e(arg);
-        return true;
-    }
-    public static bool TriggerEvent(LongDelegate e, long arg)
-    {
-        if (e == null)
-            return false;
-        e(arg);
-        return true;
-    }
-
-    public static bool TriggerEvent(Vector2Delegate e, Vector2 arg)
-    {
-        if (e == null)
-            return false;
-        e(arg);
-        return true;
-    }
-
-    public static bool TriggerEvent(Vector3Delegate e, Vector3 arg)
-    {
-        if (e == null)
-            return false;
-        e(arg);
-        return true;
-    }
-
-    public static bool TriggerEvent(Int2Delegate e, int arg1, int arg2)
-    {
-        if (e == null)
-            return false;
-        e(arg1, arg2);
-        return true;
-    }
-
-    public static bool TriggerEvent(Long2Delegate e, long arg1, long arg2)
-    {
-        if (e == null)
-            return false;
-        e(arg1, arg2);
-        return true;
-    }
-    public static bool TriggerEvent(GameObjectDelegate e, GameObject arg)
-    {
-        if (e == null)
-            return false;
-        e(arg);
-        return true;
-    }
-
 
     public static Coroutine WaitTrue(ReturnBoolDelegate func)
     {

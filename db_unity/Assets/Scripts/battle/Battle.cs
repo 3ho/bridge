@@ -52,8 +52,15 @@ public sealed class Battle
         return sb.ToString();
     }
 
-    public Grid getGrid(int x,int y)
+    public bool isOutOfMap(int x, int y)
     {
+        return x < 0 || x >= MapWidth_X || y < 0 || y >= MapHeight_Y;
+    }
+
+    public Grid getGrid(int x, int y)
+    {
+        if (isOutOfMap(x, y))
+            return null;
         return mCells[x, y];
     }
 }
