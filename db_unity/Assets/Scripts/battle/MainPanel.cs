@@ -8,6 +8,9 @@ public partial class MainPanel
 {
     private int count = 0;
 
+    private float GridWidthX;
+    private float GridHightY;
+
     protected override void onInit()
     {
         UIEventListener.Get(btn_back).onClick = onBack;
@@ -17,6 +20,13 @@ public partial class MainPanel
     protected override void onShow(System.Object param = null, string childView = null)
     {
         showLogin();
+
+        // 
+        RectTransform rootRect = m_mapRoot.GetComponent<RectTransform>();
+        Vector2 xy = rootRect.sizeDelta;
+        GridWidthX = xy.x / Battle.MapWidth_X;
+        GridHightY = xy.y / Battle.MapHeight_Y;
+        Debug.Log("sizeDelta=" + xy + ",GridWidthX=" + GridWidthX + ",GridHightY=" + GridHightY);
     }
 
     public void Update()
@@ -62,35 +72,43 @@ public partial class MainPanel
 
     private void addUIGrid(Grid grid)
     {
-        GameObject newGird = Instantiate(m_gird) as GameObject;
-
-        Image newImage = newGird.GetComponent<Image>();
+        GameObject newGird = Instantiate(m_gird.gameObject) as GameObject;
+        grid.uiGrid = newGird;
+        UIGrid newUIG = newGird.GetComponent<UIGrid>();
+        Image newImage = newUIG.m_color.GetComponent<Image>();
+        
         switch (grid.color)
         {
             case ColorUtils.R:
                 newImage.color = Color.red;
+                newImage.sprite = null;
                 break;
             case ColorUtils.B:
                 newImage.color = Color.blue;
+                newImage.sprite = null;
                 break;
             case ColorUtils.G:
                 newImage.color = Color.green;
+                newImage.sprite = null;
                 break;
             default:
-                newImage.color = Color.white;
                 break;
         }
+        RectTransform rt = newGird.GetComponent<RectTransform>();
+        rt.SetParent(m_gird.transform.parent, false);
+        rt.pivot = Vector2.zero;
+        rt.anchorMax = rt.anchorMin = Vector2.zero;
+        rt.anchoredPosition = Vector2.zero;
+        rt.localScale = Vector3.one;
+        rt.localPosition = getPosByGrid(grid);
 
-        newGird.transform.parent = m_gird.transform.parent;
-        newGird.transform.localScale = new Vector3(1, 1, 1);
-        grid.uiGrid = newGird;
+        rt.sizeDelta = new Vector2(GridWidthX, GridHightY);
 
-        newGird.transform.localPosition = getPosByGrid(grid);
         newGird.SetActive(true);
         Debug.Log("grid=" + grid + ",pos=" + getPosByGrid(grid));
     }
 
-    private Vector2 offsetPos = new Vector2(-500, -1200);
+    private Vector2 offsetPos = new Vector2(-0, -0);
 
     private Vector2 getPosByGrid(Grid grid)
     {
@@ -100,12 +118,12 @@ public partial class MainPanel
     }
     private float getXByGrid(int gridX)
     {
-        return offsetPos.x + gridX * 100;
+        return offsetPos.x + gridX * GridWidthX;
     }
 
     private float getYByGrid(int gridY)
     {
-        return offsetPos.y + gridY * 100;
+        return offsetPos.y + gridY * GridHightY;
     }
 
     private void showLogin()

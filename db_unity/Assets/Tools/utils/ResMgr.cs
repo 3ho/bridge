@@ -37,7 +37,7 @@ public class ResMgr : MonoBehaviour
         Ins = null;
     }
 
-    public Coroutine LoadAB(string abPath, ABCallback callback = null, bool canAutoUnload = true)
+    private Coroutine LoadAB(string abPath, ABCallback callback = null, bool canAutoUnload = true)
     {
         return StartCoroutine(_LoadAB(abPath, callback, canAutoUnload, false));
     }

@@ -411,7 +411,7 @@ public sealed class ViewMgr : MonoBehaviour
         {
             UnityEngine.Object objPrefab = Resources.Load("ui/prefab/" + viewType.Name);
             root = (GameObject)Instantiate(objPrefab);
-            yield return new WaitForSeconds(0.4f);
+            yield return new WaitForSeconds(0.1f);
         }
         else
         {

@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 public sealed class Battle
 {
-    public const int MapWidth_X = 20;
-    public const int MapHeight_Y = 20;
+    public const int MapWidth_X = 10;
+    public const int MapHeight_Y = 15;
 
     private readonly Grid[,] mCells = null;
 
