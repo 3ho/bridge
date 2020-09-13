@@ -129,6 +129,8 @@ public partial class MainPanel
         Debug.Log("OnPointerDown_Prop" + ",position=" + eventData.position + ",pressPosition=" + eventData.pressPosition + ",worldPosition=" + eventData.pointerCurrentRaycast.worldPosition);
     }
 
+    private int useGrid_X_Count = 0;
+
     public void OnPointerUp_Prop(PointerEventData eventData)
     {
         Vector3 worldPosition = eventData.pointerCurrentRaycast.worldPosition;
@@ -139,8 +141,19 @@ public partial class MainPanel
         Debug.Log("OnPointerUp_Prop" + ",worldPosition=" + eventData.pointerCurrentRaycast.worldPosition + ",int2=" + int2 + ",grid=" + grid);
         if (grid != null)
         {
-            grid.color = ColorUtils.X;
-            updateGridUi(grid);
+            if(grid.color != ColorUtils.X)
+            {
+                grid.color = ColorUtils.X;
+                updateGridUi(grid);
+
+                useGrid_X_Count++;
+                SetLabelText(m_grid_x_count, useGrid_X_Count);
+            }
+            else
+            {
+                //ViewMgr.Ins.ShowView<AlertPanel>("无法使用");
+                AlertPanel.Show("无法使用");
+            }
         }
     }
 
@@ -181,8 +194,15 @@ public partial class MainPanel
 
     private void showBattle()
     {
+        resetBattle();
         m_login.SetActive(false);
         m_battle.SetActive(true);
+    }
+
+    private void resetBattle()
+    {
+        useGrid_X_Count = 0;
+        SetLabelText(m_grid_x_count, useGrid_X_Count);
     }
 
     protected override void onDestroy()
