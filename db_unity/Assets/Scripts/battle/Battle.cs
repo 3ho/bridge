@@ -3,17 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 public sealed class Battle
 {
-    public const int MapWidth_X = 10;
-    public const int MapHeight_Y = 15;
+    public const int MapWidth_X = 8;
+    public const int MapHeight_Y = 12;
 
-    private readonly Grid[,] mCells = null;
+    private readonly Grid[,] mCells = null; //地图数据
+
+    public Player player; // 玩家数据
+
+    public Vector2Int target; // 终点
 
     public Battle()
     {
         mCells = genMapData();
+
+        int startX = MapWidth_X / 2;
+        int startY = 0;
+        Grid startGrid = getGrid(startX, startY);
+        if(!ColorUtils.List_RBG.Contains(startGrid.color))
+        {
+            int index = Utils.Random(0, ColorUtils.List_RBG.Count);
+            startGrid.color = ColorUtils.List_RBG[index];
+        }
+        player = new Player(startX, startY);
+        player.color = startGrid.color;
+
+        target = new Vector2Int(MapWidth_X / 2, MapHeight_Y - 1);
     }
 
     public Grid[,] genMapData()

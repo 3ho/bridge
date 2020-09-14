@@ -9,11 +9,6 @@ public class DragUI : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointer
     public Utils.Event<PointerEventData> OnPointerDown_X;
     public Utils.Event<PointerEventData> OnPointerUp_X;
 
-    private void Start()
-    {
-        startPos = transform.localPosition;
-    }
-
     public void OnDrag(PointerEventData eventData)
     {
         Vector2 offset = eventData.position - eventData.pressPosition;
@@ -24,6 +19,7 @@ public class DragUI : MonoBehaviour, IDragHandler, IPointerDownHandler, IPointer
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        startPos = transform.localPosition;
         Utils.TriggerEvent_Try(OnPointerDown_X, eventData);
     }
 

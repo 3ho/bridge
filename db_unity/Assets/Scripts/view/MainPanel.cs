@@ -1,4 +1,4 @@
-//-L-<btn_back,m_login,btn_start,txt_count,m_battle,m_gird,m_mapRoot,m_gird_x,m_grid_x_count>
+//-L-<btn_back,m_login,btn_start,txt_count,m_battle,m_gird,m_mapRoot,m_gird_x,m_grid_x_count,m_player_prefabs>
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
@@ -15,6 +15,7 @@ public partial class MainPanel : View
 	private GameObject m_mapRoot;
 	private GameObject m_gird_x;
 	private GameObject m_grid_x_count;
+	private GameObject m_player_prefabs;
 
 	protected override void Awake()
 	{
@@ -31,6 +32,7 @@ public partial class MainPanel : View
 		m_mapRoot =  data.GameObjects[6].gameObject;
 		m_gird_x =  data.GameObjects[7].gameObject;
 		m_grid_x_count =  data.GameObjects[8].gameObject;
+		m_player_prefabs =  data.GameObjects[9].gameObject;
 		ViewMgr.Ins.addView(this);
 	}
 
