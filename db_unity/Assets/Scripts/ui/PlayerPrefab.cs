@@ -17,9 +17,10 @@ public class PlayerPrefab : MonoBehaviour
     public GameObject grid;
     public GameObject scaleGo;
 
+
     private void OnEnable()
     {
-        StopCoroutine(playAnim());
+        StopCoroutine("playAnim");
         StartCoroutine(playAnim());
     }
 
@@ -50,8 +51,17 @@ public class PlayerPrefab : MonoBehaviour
         while (true)
         {
             scaleGo.transform.localScale = Vector3.one;
-            yield return new WaitForSeconds(1f);
-            for (float sc = 1; sc > -1.2; sc -= 0.1f)
+            yield return new WaitForSeconds(2f);
+            for (float sc = 1; sc > -1; sc -= 0.2f)
+            {
+                //yield return null;
+                yield return new WaitForSeconds(0.05f);
+                Vector3 v3 = scaleGo.transform.localScale;
+                v3.x = sc;
+                scaleGo.transform.localScale = v3;
+            }
+
+            for (float sc = -1; sc < 1; sc += 0.2f)
             {
                 //yield return null;
                 yield return new WaitForSeconds(0.05f);
@@ -61,14 +71,14 @@ public class PlayerPrefab : MonoBehaviour
             }
 
             // y
-            for (float sc = 1; sc > -1.2; sc -= 0.1f)
-            {
-                //yield return null;
-                yield return new WaitForSeconds(0.05f);
-                Vector3 v3 = scaleGo.transform.localScale;
-                v3.y = sc;
-                scaleGo.transform.localScale = v3;
-            }
+            //for (float sc = 1; sc > -1.2; sc -= 0.1f)
+            //{
+            //    //yield return null;
+            //    yield return new WaitForSeconds(0.05f);
+            //    Vector3 v3 = scaleGo.transform.localScale;
+            //    v3.y = sc;
+            //    scaleGo.transform.localScale = v3;
+            //}
         }
     }
 }

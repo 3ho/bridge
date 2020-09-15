@@ -38,6 +38,26 @@ public partial class MainPanel
         playerGridTraf.sizeDelta = new Vector2(GridWidthX, GridHightY);
     }
 
+    private IEnumerator playAnimScale()
+    {
+        Vector2 ddd = new Vector2(0.6f, 0.6f);
+        while (true)
+        {
+            yield return new WaitForSeconds(2);
+            yield return AlertPanel.slowScaleTo(m_target_home_image.transform, new Vector3(-1,1,1), 0, 1.5f);
+            yield return new WaitForSeconds(2);
+            yield return AlertPanel.slowScaleTo(m_target_home_image.transform, new Vector3(1, 1, 1), 0, 1.5f);
+            //m_target_home_image.transform.localScale = Vector3.one;
+            //yield return AlertPanel.slowScaleTo(m_target_home_image.transform, ddd, 0, 1.5f);
+            //yield return new WaitForSeconds(2);
+
+            //yield return new WaitForSeconds(2);
+            //yield return AlertPanel.slowScaleTo(m_target_home_image.transform, ddd, 0, 0.3f);
+            //yield return AlertPanel.slowScaleTo(m_target_home_image.transform, Vector3.one, 0, 0.3f);
+        }
+
+    }
+
     protected override void onShow(System.Object param = null, string childView = null)
     {
         showLogin();
@@ -45,6 +65,10 @@ public partial class MainPanel
         UIGrid m_uiGrid = m_gird.GetComponent<UIGrid>();
         Image girdImage = m_uiGrid.m_color.GetComponent<Image>();
         Grid.xImage = girdImage.sprite;
+
+        // 目标终点动画
+        StopCoroutine("playAnimScale");
+        StartCoroutine(playAnimScale());
     }
 
     public void Update()
@@ -72,6 +96,12 @@ public partial class MainPanel
         genMap();
 
         updatePlayerUI();
+
+        //显示目标点
+        Vector2 homePos = getPosByXY(battle.target.x, battle.target.y);
+        m_target_home.transform.localPosition = homePos;
+        RectTransform tempTf = m_target_home.GetComponent<RectTransform>();
+        tempTf.sizeDelta = new Vector2(GridWidthX, GridHightY);
     }
 
     private void updatePlayerUI()
@@ -159,19 +189,29 @@ public partial class MainPanel
         Debug.Log("OnPointerUp_Prop" + ",worldPosition=" + eventData.pointerCurrentRaycast.worldPosition + ",int2=" + int2 + ",grid=" + grid);
         if (grid != null)
         {
-            if(grid.color != ColorUtils.X)
+            // 不能是自己格子
+            if (battle.player.getGrid() == grid)
             {
-                grid.color = ColorUtils.X;
-                updateGridUi(grid);
-
-                useGrid_X_Count++;
-                SetLabelText(m_grid_x_count, useGrid_X_Count);
+                AlertPanel.Show("不能给自己使用");
+                return;
             }
-            else
+            // 不能是终点
+            if (battle.getGrid(battle.target) == grid)
             {
-                //ViewMgr.Ins.ShowView<AlertPanel>("无法使用");
                 AlertPanel.Show("无法使用");
             }
+            // 不能是？格子
+            if (grid.color == ColorUtils.X)
+            {
+                AlertPanel.Show("已经是？格子");
+            }
+
+            grid.color = ColorUtils.X;
+            updateGridUi(grid);
+
+            useGrid_X_Count++;
+            SetLabelText(m_grid_x_count, useGrid_X_Count);
+
         }
     }
 
@@ -181,9 +221,31 @@ public partial class MainPanel
         Vector3 localPos = m_gird.transform.InverseTransformPoint(worldPosition);
         Vector2Int int2 = getGridByXY(localPos);
         Grid grid = battle.getGrid(int2.x, int2.y);
-        if(grid != null)
+        if (grid != null)
         {
-            if(!ColorUtils.List_RBG.Contains(grid.color))
+            //不相邻
+            if (!grid.isBorder(battle.player.x, battle.player.y))
+            {
+                AlertPanel.Show("只能走相邻格子");
+                return;
+            }
+            //判断是否胜利
+            if (grid.x == battle.target.x && grid.y == battle.target.y)
+            {
+                AlertPanel.Show("胜利了");
+                return;
+            }
+            // 只能走颜色相同和【？】格子
+            if (grid.color != ColorUtils.X)
+            {
+                Grid playerGrid = battle.getGrid(battle.player.x, battle.player.y);
+                if (playerGrid != null && playerGrid.color != grid.color)
+                {
+                    AlertPanel.Show("只能走颜色相同和【？】格子");
+                    return;
+                }
+            }
+            if (grid.color == ColorUtils.X)
             {
                 int index = Utils.Random(0, ColorUtils.List_RBG.Count);
                 grid.color = ColorUtils.List_RBG[index];
@@ -199,7 +261,7 @@ public partial class MainPanel
 
     private Vector2 offsetPos = new Vector2(-0, -0);
 
-    private Vector2 getPosByXY(int X,int Y)
+    private Vector2 getPosByXY(int X, int Y)
     {
         float x = getXByGrid(X);
         float y = getYByGrid(Y);

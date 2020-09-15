@@ -28,7 +28,7 @@ public partial class AlertPanel : View
             SetLabelText(txt_alertBox, param);
         }
         PlayAnimation();
-        Invoke("myHide", 1.5f);
+        Invoke("myHide", 2f);
     }
 
     protected override void onHide(string childView = null)
@@ -61,12 +61,12 @@ public partial class AlertPanel : View
         //m_alert.transform.localScale = new Vector3(0.3f, 0.3f);
         //StartCoroutine(dsdsdsds(m_alert.transform, new Vector3(1, 1, 1), 0.3f));
         Vector3 target = m_alert.transform.localPosition + new Vector3(0, 200, 0);
-        StartCoroutine(slowPositionTo(m_alert.transform, target, 0.5f, 1f));
-        StartCoroutine(slowAlphaTo(m_alert, 0.2f, 0.5f, 1f));
-        StartCoroutine(slowScaleTo(m_alert.transform, new Vector3(0.8f, 0.8f), 0.9f, 1f));
+        StartCoroutine(slowPositionTo(m_alert.transform, target, 1f, 1f));
+        StartCoroutine(slowAlphaTo(m_alert, 0.2f, 1f, 1f));
+        //StartCoroutine(slowScaleTo(m_alert.transform, new Vector3(0.8f, 0.8f), 0.9f, 1f));
     }
 
-    private IEnumerator slowScaleTo(Transform tf, Vector3 target, float delayTime, float time)
+    public static IEnumerator slowScaleTo(Transform tf, Vector3 target, float delayTime, float time)
     {
         yield return new WaitForSeconds(delayTime);
         Vector3 start = tf.localScale;

@@ -28,4 +28,18 @@ public sealed class Grid
         this.y = y;
         this.color = color;
     }
+
+    /****
+     * 是否相邻
+     * */
+    public bool isBorder(int x,int y)
+    {
+        if (x == this.x && y == this.y)
+            return false;
+        int xx = x - this.x;
+        int yy = y - this.y;
+        if (Math.Abs(xx) + Math.Abs(yy) == 1)
+            return true;
+        return false;
+    }
 }

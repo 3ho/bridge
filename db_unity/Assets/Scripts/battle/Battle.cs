@@ -23,12 +23,12 @@ public sealed class Battle
         int startX = MapWidth_X / 2;
         int startY = 0;
         Grid startGrid = getGrid(startX, startY);
-        if(!ColorUtils.List_RBG.Contains(startGrid.color))
+        if (!ColorUtils.List_RBG.Contains(startGrid.color))
         {
             int index = Utils.Random(0, ColorUtils.List_RBG.Count);
             startGrid.color = ColorUtils.List_RBG[index];
         }
-        player = new Player(startX, startY);
+        player = new Player(this, startX, startY);
         player.color = startGrid.color;
 
         target = new Vector2Int(MapWidth_X / 2, MapHeight_Y - 1);
@@ -80,5 +80,10 @@ public sealed class Battle
         if (isOutOfMap(x, y))
             return null;
         return mCells[x, y];
+    }
+
+    public Grid getGrid(Vector2Int int2)
+    {
+        return getGrid(int2.x, int2.y);
     }
 }
