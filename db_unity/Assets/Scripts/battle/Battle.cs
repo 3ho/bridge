@@ -7,8 +7,8 @@ using UnityEngine;
 
 public sealed class Battle
 {
-    public const int MapWidth_X = 8;
-    public const int MapHeight_Y = 12;
+    public const int MapWidth_X = 7;
+    public const int MapHeight_Y = 9;
 
     private readonly Grid[,] mCells = null; //地图数据
 
