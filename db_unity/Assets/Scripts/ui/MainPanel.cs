@@ -26,8 +26,7 @@ public partial class MainPanel
 
         // m_gird_x
         DragUI gird_x_Cs = m_gird_x.GetComponent<DragUI>();
-        gird_x_Cs.OnDrag_X = OnDrag_Prop;
-        gird_x_Cs.OnPointerUp_X = OnPointerUp_Prop;
+        //gird_x_Cs.OnPointerUp_X = OnPointerUp_Prop;
         gird_x_Cs.OnPointerDown_X = OnPointerDown_Prop;
 
         // player
@@ -36,6 +35,10 @@ public partial class MainPanel
         playerDrga.OnPointerUp_X = OnPointerUp_Player;
         RectTransform playerGridTraf = pp.grid.GetComponent<RectTransform>();
         playerGridTraf.sizeDelta = new Vector2(GridWidthX, GridHightY);
+
+        //m_select_change
+        DragUI mSelectChange = m_select_change.GetComponent<DragUI>();
+        mSelectChange.OnPointerDown_X = OnPointerDown_Select;
     }
 
     private IEnumerator playAnimScale()
@@ -44,7 +47,7 @@ public partial class MainPanel
         while (true)
         {
             yield return new WaitForSeconds(2);
-            yield return AlertPanel.slowScaleTo(m_target_home_image.transform, new Vector3(-1,1,1), 0, 1.5f);
+            yield return AlertPanel.slowScaleTo(m_target_home_image.transform, new Vector3(-1, 1, 1), 0, 1.5f);
             yield return new WaitForSeconds(2);
             yield return AlertPanel.slowScaleTo(m_target_home_image.transform, new Vector3(1, 1, 1), 0, 1.5f);
             //m_target_home_image.transform.localScale = Vector3.one;
@@ -167,13 +170,15 @@ public partial class MainPanel
         }
     }
 
-    public void OnDrag_Prop(PointerEventData eventData)
+    public void OnPointerDown_Select(PointerEventData eventData)
     {
-
+        m_select_change.SetActive(false);
+        OnPointerUp_Prop(eventData);
     }
 
     public void OnPointerDown_Prop(PointerEventData eventData)
     {
+        m_select_change.SetActive(true);
         Debug.Log("OnPointerDown_Prop" + ",position=" + eventData.position + ",pressPosition=" + eventData.pressPosition + ",worldPosition=" + eventData.pointerCurrentRaycast.worldPosition);
     }
 
@@ -232,7 +237,7 @@ public partial class MainPanel
             //判断是否胜利
             if (grid.x == battle.target.x && grid.y == battle.target.y)
             {
-                AlertPanel.Show("胜利了");
+                m_battle_end.SetActive(true);
                 return;
             }
             // 只能走颜色相同和【？】格子
@@ -308,6 +313,8 @@ public partial class MainPanel
 
     private void resetBattle()
     {
+        m_select_change.SetActive(false);
+        m_battle_end.SetActive(false);
         useGrid_X_Count = 0;
         SetLabelText(m_grid_x_count, useGrid_X_Count);
     }
