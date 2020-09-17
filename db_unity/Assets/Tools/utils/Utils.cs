@@ -890,6 +890,28 @@ public class Utils : MonoBehaviour
         }
     }
 
+    public static float GetOrientation(float x, float y)
+    {
+        if (y == 0)
+        {
+            return x == 0 ? 0f : x > 0 ? 90f : 270f;
+        }
+
+        float angle = Mathf.Atan(x / y) * (180f / Mathf.PI);
+        if (x > 0)
+        {
+            return angle > 0 ? angle : 180f + angle;
+        }
+        else if (x < 0)
+        {
+            return angle > 0 ? 180f + angle : 360f + angle;
+        }
+        else
+        {
+            return y > 0 ? 0f : 180f;
+        }
+    }
+
     public static string GetDownLoadPath(string relPath)
     {
         return "res" + mPersistentDataPath + "/" + relPath;

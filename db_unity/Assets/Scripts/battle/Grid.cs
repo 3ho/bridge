@@ -42,4 +42,10 @@ public sealed class Grid
             return true;
         return false;
     }
+
+    override
+    public string ToString()
+    {
+        return "(" + x + "," + y + ")";
+    }
 }

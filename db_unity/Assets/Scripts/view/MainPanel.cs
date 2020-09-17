@@ -1,4 +1,4 @@
-//-L-<btn_back,m_login,btn_start,txt_count,m_battle,m_gird,m_mapRoot,m_gird_x,m_grid_x_count,m_player_prefabs,m_target_home,m_target_home_image,m_select_change,m_battle_end>
+//-L-<btn_back,m_login,btn_start,txt_count,m_battle,m_gird,m_mapRoot,m_gird_x,m_grid_x_count,m_player_prefabs,m_target_home,m_target_home_image,m_select_change,m_battle_end,m_move_player>
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
@@ -20,6 +20,7 @@ public partial class MainPanel : View
 	private GameObject m_target_home_image;
 	private GameObject m_select_change;
 	private GameObject m_battle_end;
+	private GameObject m_move_player;
 
 	protected override void Awake()
 	{
@@ -41,6 +42,7 @@ public partial class MainPanel : View
 		m_target_home_image =  data.GameObjects[11].gameObject;
 		m_select_change =  data.GameObjects[12].gameObject;
 		m_battle_end =  data.GameObjects[13].gameObject;
+		m_move_player =  data.GameObjects[14].gameObject;
 		ViewMgr.Ins.addView(this);
 	}
 

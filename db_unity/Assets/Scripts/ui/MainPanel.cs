@@ -39,6 +39,16 @@ public partial class MainPanel
         //m_select_change
         DragUI mSelectChange = m_select_change.GetComponent<DragUI>();
         mSelectChange.OnPointerDown_X = OnPointerDown_Select;
+
+        // image
+        UIGrid m_uiGrid = m_gird.GetComponent<UIGrid>();
+        Image xImage = m_uiGrid.m_color.GetComponent<Image>();
+        Grid.xImage = xImage.sprite;
+
+        // move player
+        DragUI moveDragUi = m_move_player.GetComponent<DragUI>();
+        moveDragUi.OnPointerUp_X = OnPointerUp_Move;
+        moveDragUi.OnPointerDown_X = OnPointerDown_Move;
     }
 
     private IEnumerator playAnimScale()
@@ -64,10 +74,6 @@ public partial class MainPanel
     protected override void onShow(System.Object param = null, string childView = null)
     {
         showLogin();
-
-        UIGrid m_uiGrid = m_gird.GetComponent<UIGrid>();
-        Image girdImage = m_uiGrid.m_color.GetComponent<Image>();
-        Grid.xImage = girdImage.sprite;
 
         // 目标终点动画
         StopCoroutine("playAnimScale");
@@ -163,9 +169,13 @@ public partial class MainPanel
                 newImage.color = Color.green;
                 newImage.sprite = null;
                 break;
-            default:
+            case ColorUtils.X:
                 newImage.color = Color.white;
                 newImage.sprite = Grid.xImage;
+                break;
+            case ColorUtils.None:
+                newImage.color = Color.white;
+                newImage.sprite = null;
                 break;
         }
     }
@@ -175,6 +185,57 @@ public partial class MainPanel
         m_select_change.SetActive(false);
         OnPointerUp_Prop(eventData);
     }
+
+
+    public void OnPointerUp_Move(PointerEventData eventData)
+    {
+        if (lastPlayerMoveStartPos != null)
+        {
+            Vector2 offset = eventData.position - lastPlayerMoveStartPos;
+            if (offset.sqrMagnitude < 15000)
+                return;
+            float angle = Utils.GetOrientation(offset.x, offset.y);
+            Debug.Log("OnPointerUp_Move" + ",offset=" + offset + ",sqrMagnitude=" + offset.sqrMagnitude + ",angle=" + angle);
+            Vector2Int girdPos = new Vector2Int(battle.player.x, battle.player.y);
+            if (angle < 45 || angle > 315)
+            {
+                //up
+                girdPos += new Vector2Int(0, 1);
+            }
+            else if (angle < 135)
+            {
+                // right
+                girdPos += new Vector2Int(1, 0);
+            }
+            else if (angle < 225)
+            {
+                //down
+                girdPos += new Vector2Int(0, -1);
+            }
+            else
+            {
+                //left
+                girdPos += new Vector2Int(-1, 0);
+            }
+            moveGird(battle.getGrid(girdPos.x, girdPos.y));
+        }
+    }
+
+    private Vector2 lastPlayerMoveStartPos;
+    public void OnPointerDown_Move(PointerEventData eventData)
+    {
+        lastPlayerMoveStartPos = eventData.position;
+    }
+
+    public Grid getGridByEventData(PointerEventData eventData)
+    {
+        Vector3 worldPosition = eventData.pointerCurrentRaycast.worldPosition;
+        Vector3 localPos = m_gird.transform.InverseTransformPoint(worldPosition);
+        Vector2Int int2 = getGridByXY(localPos);
+        // 改变颜色
+        return battle.getGrid(int2.x, int2.y);
+    }
+
 
     public void OnPointerDown_Prop(PointerEventData eventData)
     {
@@ -186,12 +247,9 @@ public partial class MainPanel
 
     public void OnPointerUp_Prop(PointerEventData eventData)
     {
-        Vector3 worldPosition = eventData.pointerCurrentRaycast.worldPosition;
-        Vector3 localPos = m_gird.transform.InverseTransformPoint(worldPosition);
-        Vector2Int int2 = getGridByXY(localPos);
         // 改变颜色
-        Grid grid = battle.getGrid(int2.x, int2.y);
-        Debug.Log("OnPointerUp_Prop" + ",worldPosition=" + eventData.pointerCurrentRaycast.worldPosition + ",int2=" + int2 + ",grid=" + grid);
+        Grid grid = getGridByEventData(eventData);
+        Debug.Log("OnPointerUp_Prop" + ",worldPosition=" + eventData.pointerCurrentRaycast.worldPosition + ",grid=" + grid);
         if (grid != null)
         {
             // 不能是自己格子
@@ -222,10 +280,12 @@ public partial class MainPanel
 
     public void OnPointerUp_Player(PointerEventData eventData)
     {
-        Vector3 worldPosition = eventData.pointerCurrentRaycast.worldPosition;
-        Vector3 localPos = m_gird.transform.InverseTransformPoint(worldPosition);
-        Vector2Int int2 = getGridByXY(localPos);
-        Grid grid = battle.getGrid(int2.x, int2.y);
+        Grid grid = getGridByEventData(eventData);
+        moveGird(grid);
+    }
+
+    private void moveGird(Grid grid)
+    {
         if (grid != null)
         {
             //不相邻
@@ -241,15 +301,22 @@ public partial class MainPanel
                 return;
             }
             // 只能走颜色相同和【？】格子
-            if (grid.color != ColorUtils.X)
+            Grid playerGrid = battle.player.getGrid();
+            if (grid.color != ColorUtils.X && grid.color != ColorUtils.None)
             {
-                Grid playerGrid = battle.getGrid(battle.player.x, battle.player.y);
-                if (playerGrid != null && playerGrid.color != grid.color)
+                if (battle.player.color != grid.color)
                 {
                     AlertPanel.Show("只能走颜色相同和【？】格子");
                     return;
                 }
             }
+            // 标记已走过的格子
+            if (playerGrid != null && playerGrid.color != ColorUtils.None)
+            {
+                playerGrid.color = ColorUtils.None;
+                updateGridUi(playerGrid);
+            }
+
             if (grid.color == ColorUtils.X)
             {
                 int index = Utils.Random(0, ColorUtils.List_RBG.Count);
@@ -257,7 +324,10 @@ public partial class MainPanel
             }
             battle.player.x = grid.x;
             battle.player.y = grid.y;
-            battle.player.color = grid.color;
+            if (grid.color != ColorUtils.None)
+            {
+                battle.player.color = grid.color;
+            }
 
             updateGridUi(grid);
             updatePlayerUI();
