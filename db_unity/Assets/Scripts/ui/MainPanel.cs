@@ -192,7 +192,7 @@ public partial class MainPanel
         if (lastPlayerMoveStartPos != null)
         {
             Vector2 offset = eventData.position - lastPlayerMoveStartPos;
-            if (offset.sqrMagnitude < 15000)
+            if (offset.sqrMagnitude < 500)
                 return;
             float angle = Utils.GetOrientation(offset.x, offset.y);
             Debug.Log("OnPointerUp_Move" + ",offset=" + offset + ",sqrMagnitude=" + offset.sqrMagnitude + ",angle=" + angle);
@@ -313,14 +313,31 @@ public partial class MainPanel
             // 标记已走过的格子
             if (playerGrid != null && playerGrid.color != ColorUtils.None)
             {
-                playerGrid.color = ColorUtils.None;
-                updateGridUi(playerGrid);
+                //playerGrid.color = ColorUtils.None;
+                //updateGridUi(playerGrid);
             }
 
             if (grid.color == ColorUtils.X)
             {
-                int index = Utils.Random(0, ColorUtils.List_RBG.Count);
-                grid.color = ColorUtils.List_RBG[index];
+
+                // 随机变成周围的颜色，除了玩家和？
+                List<Grid> aroudG = battle.getAroundGrid(grid.x, grid.y);
+                aroudG.RemoveAll((obj) =>
+                {
+                    if (obj == playerGrid || !ColorUtils.List_RBG.Contains(obj.color))
+                        return true;
+                    return false;
+                });
+                if (aroudG.Count > 0)
+                {
+                    int index = Utils.Random(0, aroudG.Count);
+                    grid.color = aroudG[index].color;
+                }
+                else
+                {
+                    int index = Utils.Random(0, ColorUtils.List_RBG.Count);
+                    grid.color = ColorUtils.List_RBG[index];
+                }
             }
             battle.player.x = grid.x;
             battle.player.y = grid.y;

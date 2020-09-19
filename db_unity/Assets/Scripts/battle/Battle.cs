@@ -8,7 +8,7 @@ using UnityEngine;
 public sealed class Battle
 {
     public const int MapWidth_X = 7;
-    public const int MapHeight_Y = 9;
+    public const int MapHeight_Y = 11;
 
     private readonly Grid[,] mCells = null; //地图数据
 
@@ -85,5 +85,19 @@ public sealed class Battle
     public Grid getGrid(Vector2Int int2)
     {
         return getGrid(int2.x, int2.y);
+    }
+
+    public static int[,] dir4 = new int[,] { { 0, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 }, };
+
+    public List<Grid> getAroundGrid(int x, int y)
+    {
+        List<Grid> list = new List<Grid>();
+        for (int i = 0; i < 4; i++)
+        {
+            Grid gte = getGrid(x + dir4[i, 0], y + dir4[i, 1]);
+            if (gte != null)
+                list.Add(gte);
+        }
+        return list;
     }
 }
